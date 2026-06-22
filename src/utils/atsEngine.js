@@ -60,155 +60,79 @@ const STOP_WORDS = [
   "address",
   "india",
   "resume",
-  "gmail"
-  
+  "gmail",
+  "remote",
+  "hybrid",
+  "location",
+  "responsibilities",
+  "qualifications",
 ];
 
 const SKILL_LIBRARY = {
-  react: [
-    "react",
-    "react.js",
-    "reactjs"
-  ],
+  react: ["react", "react.js", "reactjs"],
 
   oop: [
-  "oop",
-  "oops",
-  "object oriented programming",
-  "object-oriented programming"
- ],
-
- fullstack: [
-  "full stack",
-  "full-stack",
-  "fullstack"
- ],
-
-  javascript: [
-    "javascript",
-    "js",
-    "es6"
+    "oop",
+    "oops",
+    "object oriented programming",
+    "object-oriented programming",
   ],
 
-  html: [
-    "html",
-    "html5"
-  ],
+  fullstack: ["full stack", "full-stack", "fullstack"],
 
-  css: [
-    "css",
-    "css3"
-  ],
+  javascript: ["javascript", "js", "es6"],
 
-  tailwind: [
-    "tailwind",
-    "tailwindcss"
-  ],
+  html: ["html", "html5"],
 
-  nodejs: [
-    "node",
-    "node.js",
-    "nodejs"
-  ],
+  css: ["css", "css3"],
 
-  express: [
-    "express",
-    "express.js"
-  ],
+  tailwind: ["tailwind", "tailwindcss"],
 
-  mongodb: [
-    "mongodb"
-  ],
+  nodejs: ["node", "node.js", "nodejs"],
 
-  mysql: [
-    "mysql"
-  ],
+  express: ["express", "express.js"],
 
-  sql: [
-    "sql"
-  ],
+  mongodb: ["mongodb"],
 
-  python: [
-    "python"
-  ],
+  mysql: ["mysql"],
 
-  java: [
-    "java"
-  ],
+  sql: ["sql"],
 
-  git: [
-    "git"
-  ],
+  python: ["python"],
 
-  github: [
-    "github"
-  ],
+  java: ["java"],
 
-  postman: [
-    "postman"
-  ],
+  git: ["git"],
 
-  docker: [
-    "docker"
-  ],
+  github: ["github"],
 
-  aws: [
-    "aws"
-  ],
+  postman: ["postman"],
 
-  typescript: [
-    "typescript",
-    "ts"
-  ],
+  docker: ["docker"],
 
-  redux: [
-    "redux"
-  ],
+  aws: ["aws"],
 
-  nextjs: [
-    "next.js",
-    "nextjs"
-  ],
+  typescript: ["typescript", "ts"],
 
-  jwt: [
-    "jwt",
-    "jwt authentication"
-  ],
+  redux: ["redux"],
 
-  restapi: [
-    "rest api",
-    "rest apis",
-    "rest",
-    "api",
-    "apis"
-  ],
+  nextjs: ["next.js", "nextjs"],
 
-  dbms: [
-    "dbms"
-  ],
+  jwt: ["jwt", "jwt authentication"],
 
-  dsa: [
-    "data structures",
-    "algorithms",
-    "dsa"
-  ],
+  restapi: ["rest api", "rest apis", "rest", "api", "apis"],
 
-  testing: [
-    "testing",
-    "unit testing"
-  ],
+  dbms: ["dbms"],
 
-  agile: [
-    "agile"
-  ],
+  dsa: ["data structures", "algorithms", "dsa"],
 
-  cicd: [
-    "ci/cd"
-  ],
+  testing: ["testing", "unit testing"],
 
-  authentication: [
-    "authentication"
-  ]
+  agile: ["agile"],
+
+  cicd: ["ci/cd"],
+
+  authentication: ["authentication"],
 };
 
 const REQUIRED_SECTIONS = [
@@ -265,22 +189,20 @@ function extractSkills(text) {
 
   const foundSkills = [];
 
-  Object.entries(SKILL_LIBRARY).forEach(
-    ([mainSkill, aliases]) => {
-      const found = aliases.some(alias => {
+  Object.entries(SKILL_LIBRARY).forEach(([mainSkill, aliases]) => {
+    const found = aliases.some((alias) => {
       const pattern = new RegExp(
-          `\\b${alias.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}\\b`,
-          "i"
+        `\\b${alias.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}\\b`,
+        "i",
       );
 
       return pattern.test(lowerText);
-      });
+    });
 
-      if (found) {
-        foundSkills.push(mainSkill);
-      }
+    if (found) {
+      foundSkills.push(mainSkill);
     }
-  );
+  });
 
   return foundSkills;
 }
@@ -366,6 +288,32 @@ export function analyzeResume(resumeText, jobDescription) {
     );
   });
 
+  const checklist = [];
+
+  // Skills found
+  matchedSkills.forEach((skill) => {
+    checklist.push({
+      text: `${skill} skill matched`,
+      completed: true,
+    });
+  });
+
+  // Skills missing
+  missingSkills.forEach((skill) => {
+    checklist.push({
+      text: `${skill} skill missing`,
+      completed: false,
+    });
+  });
+
+  // Resume sections
+  REQUIRED_SECTIONS.forEach((section) => {
+    checklist.push({
+      text: `${section.name} section`,
+      completed: !missingSections.includes(section.name),
+    });
+  });
+
   return {
     score: finalScore,
 
@@ -387,5 +335,7 @@ export function analyzeResume(resumeText, jobDescription) {
     missingSections,
 
     suggestions,
+
+    checklist,
   };
 }
