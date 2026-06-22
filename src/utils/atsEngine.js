@@ -379,8 +379,8 @@ export function analyzeResume(resumeText, jobDescription) {
     matchedSkills,
     missingSkills,
 
-    resumeKeywords,
-    jdKeywords,
+    // resumeKeywords,
+    // jdKeywords,
 
     matchedKeywords,
 

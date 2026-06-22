@@ -1,0 +1,205 @@
+import jsPDF from "jspdf";
+
+export function generatePDF(result) {
+const doc = new jsPDF();
+
+let y = 20;
+
+const checkPageBreak = () => {
+if (y > 270) {
+doc.addPage();
+y = 20;
+}
+};
+
+doc.setFontSize(20);
+doc.text("ATS Resume Checker Pro", 20, y);
+
+y += 12;
+
+doc.setFontSize(14);
+doc.text(`ATS Score: ${result.score}%`, 20, y);
+
+y += 12;
+
+doc.text(
+`Skill Match: ${result.skillScore}%`,
+20,
+y
+);
+
+y += 8;
+
+doc.text(
+`Resume Structure: ${result.sectionScore}%`,
+20,
+y
+);
+
+y += 8;
+
+doc.text(
+`Keyword Relevance: ${result.keywordScore}%`,
+20,
+y
+);
+
+y += 15;
+
+// ==========================
+// MATCHED SKILLS
+// ==========================
+
+doc.setFontSize(16);
+doc.text("Matched Skills", 20, y);
+
+y += 10;
+
+doc.setFontSize(12);
+
+result.matchedSkills.forEach((skill) => {
+checkPageBreak();
+
+
+doc.text(`• ${skill}`, 25, y);
+
+y += 7;
+
+
+});
+
+y += 8;
+
+// ==========================
+// MISSING SKILLS
+// ==========================
+
+doc.setFontSize(16);
+doc.text("Missing Skills", 20, y);
+
+y += 10;
+
+doc.setFontSize(12);
+
+if (result.missingSkills.length > 0) {
+result.missingSkills.forEach((skill) => {
+checkPageBreak();
+
+
+  doc.text(`• ${skill}`, 25, y);
+
+  y += 7;
+});
+
+
+} else {
+doc.text(
+"✓ No missing skills detected.",
+25,
+y
+);
+
+
+y += 10;
+
+
+}
+
+y += 8;
+
+// ==========================
+// MISSING SECTIONS
+// ==========================
+
+doc.setFontSize(16);
+doc.text("Missing Sections", 20, y);
+
+y += 10;
+
+doc.setFontSize(12);
+
+if (result.missingSections.length > 0) {
+result.missingSections.forEach(
+(section) => {
+checkPageBreak();
+
+
+    doc.text(
+      `✗ ${section}`,
+      25,
+      y
+    );
+
+    y += 7;
+  }
+);
+
+
+} else {
+doc.text(
+"[OK] All required sections are present.",
+25,
+y
+);
+
+
+y += 10;
+
+
+}
+
+y += 8;
+
+// ==========================
+// SUGGESTIONS
+// ==========================
+
+doc.setFontSize(16);
+doc.text("Suggestions", 20, y);
+
+y += 10;
+
+doc.setFontSize(12);
+
+if (result.suggestions.length > 0) {
+result.suggestions.forEach(
+(item) => {
+const lines =
+doc.splitTextToSize(
+`• ${item}`,
+160
+);
+
+
+    checkPageBreak();
+
+    doc.text(lines, 25, y);
+
+    y += lines.length * 7;
+  }
+);
+
+
+} else {
+doc.text(
+"Excellent Match! Your resume aligns well with this job description.",
+25,
+y
+);
+
+
+y += 10;
+
+doc.text(
+  "Keep tailoring your resume for each application to maximize ATS performance.",
+  25,
+  y
+);
+
+
+
+
+}
+
+doc.save("ATS_Report.pdf");
+}

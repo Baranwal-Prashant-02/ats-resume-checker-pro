@@ -21,7 +21,8 @@
 
 // export default App;
 
-import { useState } from "react";
+import { useState, useRef } from "react";
+import Footer from "./components/Footer";
 
 import Header from "./components/Header";
 import ResumeUpload from "./components/ResumeUpload";
@@ -31,13 +32,19 @@ import ATSResult from "./components/ATSResult";
 import { analyzeResume } from "./utils/atsEngine";
 
 function App() {
-const [resumeText, setResumeText] = useState("");
+const [resumeText, setResumeText] =
+useState("");
 
 const [jobDescription, setJobDescription] =
 useState("");
 
 const [analysisResult, setAnalysisResult] =
 useState(null);
+
+const [analyzing, setAnalyzing] =
+useState(false);
+
+const resultRef = useRef(null);
 
 const handleAnalyze = () => {
 if (!resumeText) {
@@ -51,12 +58,25 @@ if (!jobDescription.trim()) {
   return;
 }
 
-const result = analyzeResume(
-  resumeText,
-  jobDescription
-);
+setAnalyzing(true);
 
-setAnalysisResult(result);
+setTimeout(() => {
+  const result = analyzeResume(
+    resumeText,
+    jobDescription
+  );
+
+  setAnalysisResult(result);
+
+  setAnalyzing(false);
+
+  setTimeout(() => {
+    resultRef.current?.scrollIntoView({
+      behavior: "smooth",
+      block: "start",
+    });
+  }, 100);
+}, 1200);
 
 
 };
@@ -82,9 +102,12 @@ return ( <div className="min-h-screen bg-slate-950 text-white overflow-x-hidden"
 
       <button
         onClick={handleAnalyze}
+        disabled={analyzing}
         className="
           bg-cyan-500
           hover:bg-cyan-400
+          disabled:opacity-50
+          disabled:cursor-not-allowed
           text-slate-950
           font-semibold
           px-8
@@ -93,15 +116,43 @@ return ( <div className="min-h-screen bg-slate-950 text-white overflow-x-hidden"
           transition
         "
       >
-        Analyze Resume
+        {analyzing
+          ? "Analyzing Resume..."
+          : "Analyze Resume"}
       </button>
 
     </div>
 
-    <ATSResult
-      result={analysisResult}
-    />
+    {!analysisResult && (
+      <div
+        className="
+          max-w-4xl
+          mx-auto
+          mt-10
+          bg-slate-900
+          rounded-2xl
+          p-8
+          text-center
+        "
+      >
+        <h2 className="text-2xl font-bold">
+          Ready for ATS Analysis
+        </h2>
 
+        <p className="text-slate-400 mt-3">
+          Upload your resume and paste a
+          job description to generate
+          an ATS compatibility report.
+        </p>
+      </div>
+    )}
+
+    <div ref={resultRef}>
+      <ATSResult
+        result={analysisResult}
+      />
+    </div>
+    <Footer />
   </div>
 
 </div>
@@ -111,7 +162,6 @@ return ( <div className="min-h-screen bg-slate-950 text-white overflow-x-hidden"
 }
 
 export default App;
-
 
 
 
