@@ -46,9 +46,8 @@ function Header() {
           text-lg
         "
       >
-        Upload your resume PDF, compare it with any
-        job description, identify missing skills,
-        and improve your ATS score instantly.
+        Analyze resumes against job descriptions, identify skill gaps, 
+        calculate ATS compatibility scores, and generate downloadable ATS reports..
       </p>
 
       {/* <div className="mt-8">
